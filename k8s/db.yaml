@@ -58,10 +58,10 @@ spec:
         volumeMounts:
         - name: mariadb-data
           mountPath: /var/lib/mysql
-        volumes:
-        - name: mariadb-data
-          persistentVolumeClaim:
-            claimName: mariadb-pvc
+      volumes:
+      - name: mariadb-data
+        persistentVolumeClaim:
+          claimName: mariadb-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -74,4 +74,3 @@ spec:
   ports:
   - port: 3306
     targetPort: 3306
-
