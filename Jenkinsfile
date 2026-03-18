@@ -5,8 +5,8 @@ pipeline {
         DOCKER_IMAGE_NAME = 'nguyenphong8852/owncloud-k8s-demo'
         IMAGE_TAG         = "${BUILD_NUMBER}"
 
-        # Repo GitOps chứa manifest mà ArgoCD đang watch
-        GITOPS_REPO       = 'github.com:phongnt93/owncloud-k8s-demo.git'
+        // Repo GitOps chua manifest ma ArgoCD dang watch
+        GITOPS_REPO       = 'github.com/phongnt93/owncloud-k8s-demo.git'
         GITOPS_BRANCH     = 'main'
         MANIFEST_FILE     = 'k8s/owncloud.yaml'
     }
@@ -68,7 +68,7 @@ pipeline {
 
                       git add ${MANIFEST_FILE}
                       git commit -m "[Jenkins] Update ownCloud image to ${IMAGE_TAG}" || echo "No changes"
-                      git push origin ${GITOPS_BRANCH}
+                      git push https://${GIT_USER}:${GIT_PASS}@${GITOPS_REPO} ${GITOPS_BRANCH}
                     '''
                 }
             }
@@ -77,8 +77,10 @@ pipeline {
 
     post {
         success {
-            echo "CI done: image pushed, GitOps repo updated. ArgoCD sẽ tự sync."
+            echo "CI done: image pushed, GitOps repo updated. ArgoCD se tu sync."
+        }
+        failure {
+            echo "Build failed"
         }
     }
 }
-
