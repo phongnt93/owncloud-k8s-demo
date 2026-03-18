@@ -6,7 +6,7 @@ pipeline {
         IMAGE_TAG         = "${BUILD_NUMBER}"
 
         # Repo GitOps chứa manifest mà ArgoCD đang watch
-        GITOPS_REPO       = 'github.com/huequach/owncloud-k8s-gitops.git'
+        GITOPS_REPO       = 'github.com:phongnt93/owncloud-k8s-demo.git'
         GITOPS_BRANCH     = 'main'
         MANIFEST_FILE     = 'k8s/owncloud.yaml'
     }
