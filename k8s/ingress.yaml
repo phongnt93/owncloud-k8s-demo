@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: owncloud-ingress
+  namespace: owncloud
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"   # cho phép upload file lớn
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: owncloud.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: owncloud-web      # trùng với Service trong owncloud.yaml
+            port:
+              number: 80
+

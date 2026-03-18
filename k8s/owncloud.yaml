@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: owncloud-secret
+  namespace: owncloud
+type: Opaque
+stringData:
+  admin-password: "Admin123"          # nên chuyển sang Jenkins/K8s secret thật
+  db-password: "OwncloudPass123"      # trùng với password ở db.yaml
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: owncloud-pvc
+  namespace: owncloud
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: owncloud-web
+  namespace: owncloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: owncloud-web
+  template:
+    metadata:
+      labels:
+        app: owncloud-web
+    spec:
+      containers:
+      - name: owncloud
+        image: nguyenphong8852/owncloud-k8s-demo:IMAGE_TAG   # Jenkins sẽ sed IMAGE_TAG
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: OWNCLOUD_DOMAIN
+          value: "owncloud.local"
+        - name: OWNCLOUD_TRUSTED_DOMAINS
+          value: "owncloud.local"
+        - name: OWNCLOUD_DB_TYPE
+          value: "mysql"
+        - name: OWNCLOUD_DB_NAME
+          value: "owncloud"
+        - name: OWNCLOUD_DB_USERNAME
+          value: "owncloud"
+        - name: OWNCLOUD_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: owncloud-secret
+              key: db-password
+        - name: OWNCLOUD_DB_HOST
+          value: "mariadb:3306"   # Service DB trong cùng namespace
+        - name: OWNCLOUD_ADMIN_USERNAME
+          value: "admin"
+        - name: OWNCLOUD_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: owncloud-secret
+              key: admin-password
+        ports:
+        - containerPort: 8080
+          name: http
+        volumeMounts:
+        - name: owncloud-data
+          mountPath: /mnt/data
+      volumes:
+      - name: owncloud-data
+        persistentVolumeClaim:
+          claimName: owncloud-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: owncloud-web
+  namespace: owncloud
+spec:
+  selector:
+    app: owncloud-web
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+  type: ClusterIP
+
