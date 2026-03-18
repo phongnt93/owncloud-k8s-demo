@@ -5,8 +5,8 @@ metadata:
   namespace: owncloud
 type: Opaque
 stringData:
-  admin-password: "Admin123"          # nên chuyển sang Jenkins/K8s secret thật
-  db-password: "OwncloudPass123"      # trùng với password ở db.yaml
+  admin-password: "Admin123"
+  db-password: "OwncloudPass123"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -37,7 +37,7 @@ spec:
     spec:
       containers:
       - name: owncloud
-        image: nguyenphong8852/owncloud-k8s-demo:IMAGE_TAG   # Jenkins sẽ sed IMAGE_TAG
+        image: nguyenphong8852/owncloud-k8s-demo:IMAGE_TAG
         imagePullPolicy: IfNotPresent
         env:
         - name: OWNCLOUD_DOMAIN
@@ -56,7 +56,7 @@ spec:
               name: owncloud-secret
               key: db-password
         - name: OWNCLOUD_DB_HOST
-          value: "mariadb:3306"   # Service DB trong cùng namespace
+          value: "mariadb:3306"
         - name: OWNCLOUD_ADMIN_USERNAME
           value: "admin"
         - name: OWNCLOUD_ADMIN_PASSWORD
@@ -88,4 +88,3 @@ spec:
     port: 80
     targetPort: http
   type: ClusterIP
-
