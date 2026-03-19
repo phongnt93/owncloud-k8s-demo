@@ -37,7 +37,7 @@ spec:
     spec:
       containers:
       - name: owncloud
-        image: nguyenphong8852/owncloud-k8s-demo:IMAGE_TAG
+        image: nguyenphong8852/owncloud-k8s-demo:4
         imagePullPolicy: IfNotPresent
         env:
         - name: OWNCLOUD_DOMAIN
